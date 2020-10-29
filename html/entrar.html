@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <title>Inicio de sesion</title>
+        <link rel="shortcut icon" href="http://lluspel.pythonanywhere.com/static/icon.png">
+
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+        <script>
+            $(document).ready(function(){
+                $("button").click(function(){
+                    var vusuario=document.getElementById("usuario").value;
+                    var vpwd="123" + document.getElementById("pwd").value + "123" //super cifrado de la nasa con la cia
+
+                    $.get(
+                        "https://rni2x5mh0i.execute-api.us-east-1.amazonaws.com/login",
+                        {usuario : vusuario, pwd : vpwd},
+                        function(data) {
+                            switch (JSON.stringify(data['accesoConcedido'])) {
+                                case '1':
+                                    alert("Usuario existente");
+                                    window.location = "https://calculadora12.s3.amazonaws.com/buscador.html#" + vusuario;
+                                    break;
+                                case '-2':
+                                    alert("Contraseña no valida, le queda un intento menos.");
+                                    break;
+                                case '-1':
+                                    alert("Ha agotado el número de intentos por favor restablezca la contraseña.");
+                                    break;
+                                default:
+                                    alert("Usuario inexistente.");
+                                    break;
+                            }
+                        }
+                    );
+                });
+            });
+        </script>
+
+    </head>
+    <body class="bg-secondary">
+        <main class="d-flex w-100 h-100 mx-auto flex-column mb-auto">
+            <header class="mb-auto bg-info p-2">
+                <img src="http://lluspel.pythonanywhere.com/static/pk.png" class="d-inline-block align-top" height="45rem">
+            </header>
+
+            <div class="card rounded-lg mb-auto" style="width: 30rem;">
+                <div class="card-body mb-0">
+                    <h5 class="card-title">ENTRAR</h5>
+                    <h6 class="card-subtitle mb-3 text-muted font-weight-light">Introduzca sus datos de usuario.</h6>
+        
+                    <div class="form-group">
+                        <h6 class="card-subtitle mb-1 text-muted">Usuario</h6>
+                        <input type="text" class="form-control" placeholder="Inserte usuario" id="usuario" name="usuario" required>
+                    </div>
+        
+                    <div class="form-group">
+                        <h6 class="card-subtitle mb-1 text-muted">Contraseña</h6>
+                        <input type="password" class="form-control" placeholder="Inserte contraseña" id= "pwd" name="pwd" required>
+                    </div>
+        
+                    <div class="form-group mb-0 mt-2">
+                        <button class="btn bg-info text-white">ENTRAR</button>
+                        <p class="mt-2 mb-0">Para restabecer la contraseña pinche <a href="http://127.0.0.1:5500/recuperar.html">aquí.</a></p>
+                    </div>
+                </div>
+            </div>
+            <section  class="copyright text-center text-white mb-0" style="background-color:rgb(22, 22, 22); ">
+                <div class="container mb-1">
+                  <small>Copyright &copy; 
+                    <a href="https://www.linkedin.com/in/luiscrespotisner/" class="text-white">Luis Crespo</a> &
+                  <a href="https://www.linkedin.com/in/claudia-aragones/" class="text-white"> Claudia Aragonés-Chaves</a> 
+                  2020</small>
+                </div>
+            </section>
+        </main>
+    </body>
+</html>

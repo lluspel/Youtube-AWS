@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>Subida de videos</title>
+    <link rel="shortcut icon" href="http://lluspel.pythonanywhere.com/static/icon.png">
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <script>
+    $(document).ready(function(){
+      $("#credentials").hide();
+    });
+
+  function getAWSKeys() {
+    var asd=$.get(
+        "https://34i4y0tpph.execute-api.us-east-1.amazonaws.com/pruebaAWS4CredentialsS3",
+          {},
+          function(data) {
+            document.getElementById("Policy").value = data.stringToSign;
+            document.getElementById("X-Amz-Credential").value = data.xAmzCredential;		
+            document.getElementById("X-Amz-Date").value = data.amzDate;		
+            document.getElementById("X-Amz-Signature").value = data.stringSigned;	
+            document.getElementById("X-Amz-Security-Token").value = data.securityToken;	
+          }
+      )
+    
+  }
+
+  function setKeyFilename() {
+    vusuarioSubio = window.location.hash.substring(1);
+    document.getElementById("key").value = "usuarios/" + vusuarioSubio + "/" + document.getElementById("file").value.substring(document.getElementById("file").value.lastIndexOf('\\')+1);
+
+    vurlArchivo = "http://calculadora12.s3.us-east-1.amazonaws.com/" + document.getElementById("key").value;
+    vtamanio=document.getElementById("file").files[0].size; 
+    vetiqueta = document.getElementById("etiqueta").value;
+    vnombre = document.getElementById("file").value.substring(document.getElementById("file").value.lastIndexOf('\\')+1);
+    $.get(
+      "https://6bxsx5y53l.execute-api.us-east-1.amazonaws.com/ApiVideos",
+      {tamanio : vtamanio, urlArchivo : vurlArchivo, usuarioSubio : vusuarioSubio, etiqueta : vetiqueta, nombre : vnombre},
+      function(data) {
+        switch (JSON.stringify(data['accesoConcedido'])) {
+          case '1':
+            alert("Subido");
+            break;
+          default:
+            alert("Ha ocurrido un error.");
+            break;
+        }
+      }
+    );
+  }
+
+  </script>
+
+
+
+  </head>
+  <body onload="getAWSKeys()" class="bg-secondary">
+    <header class="mb-5 bg-info p-2">
+      <img src="http://lluspel.pythonanywhere.com/static/pk.png" class="d-inline-block align-top" height="45rem">
+    </header>
+
+    <form class="card rounded-lg mb-auto" style="width: 30rem;" action="http://calculadora12.s3.us-east-1.amazonaws.com/" onsubmit="setKeyFilename()" method="post" enctype="multipart/form-data">
+      <div id="credentials">
+        <label >X-Amz-Credential</label>
+        <input type="text"  id="X-Amz-Credential" name="X-Amz-Credential" value="" />
+        <label >X-Amz-Date</label>
+        <input type="text"  id="X-Amz-Date" name="X-Amz-Date" value="" />
+        <label >Policy  (b64Policy)</label>
+        <input type="text"  id="Policy" name="Policy" value="" />
+        <label >X-Amz-Signature</label>
+        <input type="text"   id="X-Amz-Signature" name="X-Amz-Signature" value="" />
+
+        <input type="input" id="key" name="key" value="fichero.sln" /><br />
+        <input type="hidden" name="acl" value="public-read" />
+        <input type="hidden" name="success_action_redirect" value="http://calculadora12.s3.us-east-1.amazonaws.com/success.html" />
+        <input type="text"   name="X-Amz-Algorithm" value="AWS4-HMAC-SHA256" />
+        <input type="text" id="X-Amz-Security-Token" name="X-Amz-Security-Token" value=""/>
+      </div>
+      
+      <div class="card-body mb-0 p-3">
+          <h5 class="card-title">Selecciona archivo para subir</h5>
+          <input type="text"  id="etiqueta" value="" class="mb-4">
+          <input type="file" name="file" id="file">
+          <input type="submit" value="Upload" name="submit" >
+          </div>
+      </div>
+    </form>
+
+  </body>
+</html>
+

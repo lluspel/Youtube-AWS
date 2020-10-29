@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <title>Inicio de sesion</title>
+        <link rel="shortcut icon" href="http://lluspel.pythonanywhere.com/static/icon.png">
+
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+        <script>
+            $(document).ready(function(){
+                $("#pwd").hide();
+                $("#pwdconfir").hide();
+                $("#restablecer").hide();
+                $("#recuperar").click(function(){
+                    var vemail=document.getElementById("emailT").value;
+                    var vrecupPwd=document.getElementById("recupPwdT").value;
+
+                    $.get(
+                        "https://xnmcu7s4t5.execute-api.us-east-1.amazonaws.com/ApiRecuperar",
+                        {email : vemail, recupPwd : vrecupPwd},
+                        function(data) {
+                            if (JSON.stringify(data['accesoConcedido'])==1){
+                                alert("Acceso concedido.");
+                                $("#pwd").show();
+                                $("#pwdconfir").show();
+                                $("#restablecer").show();
+                                $("#recupPwd").hide();
+                                $("#email").hide();
+                                $("#recuperar").hide();
+                            }
+                            else{
+                                alert("Acceso denegado.");
+                            }
+                        }
+                    );
+                });
+                $("#restablecer").click(function(){
+                    if(document.getElementById("pwdT").value == document.getElementById("pwdconfirT").value && document.getElementById("pwdT").value){
+                        var vpwd="123"+document.getElementById("pwdT").value+"123";
+                        var vemail=document.getElementById("emailT").value;
+                        $.get(
+                        "https://cu6vlmed7j.execute-api.us-east-1.amazonaws.com/ApiRestablecer",
+                        { email : vemail, pwd : vpwd},
+                        function(data) {
+                            if (JSON.stringify(data['accesoConcedido'])==1){
+                                alert("Contraseña restablecida.");
+                                window.location = "https://calculadora12.s3.amazonaws.com/entrar.html"
+                            }
+                            else{
+                                alert("Imposible restablecer tu contraseña.");
+                            }
+                        });
+                    }
+                    else alert("Por favor, asegurese de que las contraseñas coincidan.")
+                });
+            });
+        </script>
+
+    </head>
+    <body class="bg-secondary">
+        <main class="d-flex w-100 h-100 mx-auto flex-column mb-auto">
+            <header class="mb-auto bg-info p-2">
+                <img src="http://lluspel.pythonanywhere.com/static/pk.png" class="d-inline-block align-top" height="45rem">
+            </header>
+
+            <div class="card rounded-lg mb-auto" style="width: 30rem;">
+                <div class="card-body mb-0">
+                    <h5 class="card-title">RECUPERACION</h5>
+                    <h6 class="card-subtitle mb-3 text-muted font-weight-light">Introduzca sus datos de usuario para restablecer la contraseña.</h6>
+                            
+                    <div class="form-group" id="email">
+                        <h6 class="card-subtitle mb-1 text-muted">Email</h6>
+                        <input type="email" class="form-control" placeholder="Inserte email" name="email" id="emailT" required>
+                    </div>
+        
+                    <div class="form-group" id="recupPwd">
+                        <h6 class="card-subtitle mb-1 text-muted">Frase de recuperacion de contraseña</h6>
+                        <input type="text" class="form-control" placeholder="Inserte frase" name="recupPwd" id="recupPwdT" required>
+                    </div>
+        
+                    <div class="form-group mb-0">
+                        <button class="btn bg-info text-white" id = "recuperar">RECUPERAR</button>
+                    </div>
+                    
+
+                    <div class="form-group" id= "pwd">
+                        <h6 class="card-subtitle mb-1 text-muted">Contraseña</h6>
+                        <input type="password" class="form-control" placeholder="Inserte contraseña" id="pwdT"name="pwd" required>
+                    </div>
+
+                    <div class="form-group" id= "pwdconfir">
+                        <h6 class="card-subtitle mb-1 text-muted">Confirme la contraseña</h6>
+                        <input type="password" class="form-control" placeholder="Inserte contraseña" id= "pwdconfirT" name="pwdconfir" required>
+                    </div>
+        
+                    <div class="form-group mb-0">
+                        <button class="btn bg-info text-white" id = "restablecer">RESTABLECER</button>
+                    </div>
+                    
+                </div>
+            </div>
+            <section  class="copyright text-center text-white mb-0" style="background-color:rgb(22, 22, 22); ">
+                <div class="container mb-1">
+                  <small>Copyright &copy; 
+                    <a href="https://www.linkedin.com/in/luiscrespotisner/" class="text-white">Luis Crespo</a> &
+                  <a href="https://www.linkedin.com/in/claudia-aragones/" class="text-white"> Claudia Aragonés-Chaves</a> 
+                  2020</small>
+                </div>
+            </section>
+        </main>
+    </body>
+</html>

@@ -1,0 +1,120 @@
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <title>Inicio de sesion</title>
+        <link rel="shortcut icon" href="http://lluspel.pythonanywhere.com/static/icon.png">
+
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+        <script>
+
+            $(document).ready(function(){
+                buscar();
+                $("#buscar").click(function(){
+                    $("tbody").remove();
+                    buscar();
+                });
+                $("#subir").click(function(){
+                    window.location = "https://calculadora12.s3.amazonaws.com/upload.html" + location.hash
+                });
+                $("#misvideos").click(function(){
+                    window.location = "https://calculadora12.s3.amazonaws.com/misvideos.html" + location.hash
+                });
+                function borrar(vurl) {
+                    $.get(
+                        "https://0yetrngn19.execute-api.us-east-1.amazonaws.com/ApiBorrarVideo",
+                        {urlArchivo : vurl},
+                        function(data){
+                            vnombre = data.nombre;
+                            vusuario = data.usuarioSubio;
+                        }
+                    );
+                    $.get(
+                        "https://1dmu6gos67.execute-api.us-east-1.amazonaws.com/ApiBorrarS3",
+                        {usuarioSubio : vusuario, nombre:vnombre},
+                        function(data){
+                            if (JSON.stringify(data['accesoConcedido']).localeCompare('True') == 0)
+                                alert("Borrado correctamente");
+                        }
+                    );
+                }
+
+                function buscar()
+                {
+                    vetiqueta=document.getElementById("etiqueta").value;
+                    vuser="";
+                    $.get(
+                        "https://m4oh2lonfh.execute-api.us-east-1.amazonaws.com/buscar",
+                        {etiqueta : vetiqueta, usuarioSubio: vuser},
+                        function(data){
+                            var i = 0;
+                            for (datas in data){                                
+                                user = "<td>"+data[i].usuarioSubio +"</td>";
+                                nombre = "<td><a href='"+data[i].urlArchivo+"' class='text-white'>"+data[i].nombre +"</a></td>";
+                                fecha = "<td>"+data[i].fechaSubido +"</td>";
+                                size = "<td>"+(data[i].tamanio/1000000).toFixed(2) +" MB</td>";
+                                borrar = "<td><button onclick=\"borrar('"+data[i].urlArchivo +"')\" class='btn bg-danger text-white ml-3' style='border-radius:0.5rem;'><img src='http://lluspel.pythonanywhere.com/static/basura.png' height='20rem' class='mr-1'> Borrar</button></td>";
+                                    
+                                if (data[i].usuarioSubio.localeCompare(window.location.hash.substring(1)) == 0){
+                                    $("tbody").append("<tr>"+ nombre + user + fecha + size + borrar +"</tr>");
+                                }
+                                else {
+                                    $("tbody").append("<tr>"+ nombre + user + fecha + size +"</tr>");
+                                }
+                                i++;
+                                if (i == 10) exit;
+                            }
+                        }
+                    );
+                }
+            });
+        </script>
+    </head>
+    
+    <body class="bg-secondary">
+        <main class="d-flex w-100 h-100 mx-auto flex-column mb-auto">
+            <header class="mb-4 bg-info p-2">
+                <img src="http://lluspel.pythonanywhere.com/static/pk.png" class="d-inline-block align-top" height="45rem">
+            </header>
+            <form align='center'>
+                <h1 class="text-white m-3">BUSCADOR</h1>
+                <div class="input-group mb-4 ml-auto mr-auto"  style="width: 40rem;">
+                    <input class="form-control my-0 py-1" type="text" style="border-radius: 0.5rem 0 0 0.5rem;" id="etiqueta" value="">
+                    <div class="input-group-append">
+                        <button class="btn bg-info text-white" style="border-radius: 0 0.5rem 0.5rem 0;" id="buscar">
+                            <img src="http://lluspel.pythonanywhere.com/static/lupa.png" height="20rem"> 
+                        </button>
+                    </div>
+                    <button class="btn bg-info text-white ml-3" style="border-radius:0.5rem;" id="subir">
+                        <img src="http://lluspel.pythonanywhere.com/static/subir.png" height="20rem" class="mr-1"> Subir
+                    </button>
+                    <button class="btn bg-info text-white ml-3" style="border-radius:0.5rem;" id="misvideos">
+                        Mis Videos
+                    </button>
+                </div>
+            
+                <table class="table table-striped table-dark mr-auto ml-auto mb-auto" style="width: 60rem;" align="center">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Usuario</th>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Peso</th>
+                            <th scope="col">Borrar</th>
+                        </tr>   
+                    </thead>
+                    <tbody id="#tbody">
+                    </tbody>
+                </table>
+
+            </form>
+        </main>
+    </body>
+</html>
